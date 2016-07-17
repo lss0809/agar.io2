@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+  <head>
+  </head>
+  <body>
+    <canvas id="app" width="500" height="500"></canvas>
+    <script>
+      function GameObject(options) {
+        this.x = options.x || 0; this.y = options.y || 0;
+        this.render = options.render || function (ctx) {};
+        this.mainloop = options.mainloop || function () {};
+        this.willAction = options.willAction || function () {};
+        this.velocity = {
+          x: 0, y: 0,
+        };
+        this.isCrashed = false;
+      }
+
+      var app = document.getElementById('app');
+      var context = app.getContext('2d');
+      var enemies = [
+        new GameObject({
+          x: 400, y: 400,
+          render: function (context) {
+            context.beginPath();
+            context.rect(this.x, this.y, 100, 100);
+            context.closePath();
+            if (this.isCrashed === true) {
+              context.fillStyle = '#ff0000';
+            } else {
+              context.fillStyle = '#000000';
+            }
+            context.fill();
+          },
+          willAction() {
+            if (this.isCrashed) {
+              this.crashedTime = (this.crashedTime || 0) + 1;
+              if (this.crashedTime > 100) {
+                enemies = enemies.filter(enemy => enemy !== this);
+              }
+              this.isCrashed = false;
+            }
+          },
+        }),
+        new GameObject({
+          x: 300, y: 300,
+          render: function (context) {
+            context.beginPath();
+            context.rect(this.x, this.y, 100, 100);
+            context.closePath();
+            if (this.isCrashed === true) {
+              context.fillStyle = '#ff0000';
+            } else {
+              context.fillStyle = '#000000';
+            }
+            context.fill();
+          },
+          willAction() {
+            if (this.isCrashed) {
+              this.crashedTime = (this.crashedTime || 0) + 1;
+              if (this.crashedTime > 100) {
+                enemies = enemies.filter(enemy => enemy !== this);
+              }
+              this.isCrashed = false;
+            }
+          },
+        }),
+        new GameObject({
+          x: 200, y: 200,
+          render: function (context) {
+            context.beginPath();
+            context.rect(this.x, this.y, 100, 100);
+            context.closePath();
+            if (this.isCrashed === true) {
+              context.fillStyle = '#ff0000';
+            } else {
+              context.fillStyle = '#000000';
+            }
+            context.fill();
+          },
+          willAction() {
+            if (this.isCrashed) {
+              this.crashedTime = (this.crashedTime || 0) + 1;
+              if (this.crashedTime > 100) {
+                enemies = enemies.filter(enemy => enemy !== this);
+              }
+              this.isCrashed = false;
+            }
+          },
+        }),
+      ];
+      var player = new GameObject({
+        render: function (context) {
+          context.beginPath();
+          context.arc(this.x, this.y, 70, 0, Math.PI * 2, false);
+          context.closePath();
+          if (this.isCrashed === true) {
+            context.fillStyle = '#ff0000';
+          } else {
+            context.fillStyle = '#000000';
+          }
+          context.fill();
+        },
+        mainloop: function () {
+          enemies.forEach((enemy) => {
+            if (this.x > enemy.x-70 && this.x < enemy.x+170) {
+              if (this.y > enemy.y-70 && this.y < enemy.y+170) {
+                this.isCrashed = true;
+                enemy.isCrashed = true;
+              }
+            }
+          });
+        },
+        willAction: function () {
+          this.isCrashed = false;
+        },
+      });
+      var keyDown = {
+        left: false,
+        right: false,
+        top: false,
+        bottom: false,
+      };
+      setInterval(function () {
+        if (keyDown.left) {
+          player.x -= 1;
+        }
+        if (keyDown.right) {
+          player.x += 1;
+        }
+        if (keyDown.top) {
+          player.y -= 1;
+        }
+        if (keyDown.bottom) {
+          player.y += 1;
+        }
+        context.clearRect(0, 0, 1500, 1500);
+        player.willAction();
+        enemies.forEach(enemy => enemy.willAction());
+        player.mainloop();
+        player.render(context);
+        enemies.forEach(function (enemy) {
+          enemy.render(context);
+        });
+      }, 1000 / 60);
+      window.addEventListener('keydown', function (event) {
+        switch (event.keyCode) {
+          case 37:
+            keyDown.left = true;
+            break;
+          case 38:
+            keyDown.top = true;
+            break;
+          case 39:
+            keyDown.right = true;
+            break;
+          case 40:
+            keyDown.bottom = true;
+            break;
+        }
+      });
+      window.addEventListener('keyup', function (event){
+        switch (event.keyCode) {
+          case 37:
+            keyDown.left = false;
+            break;
+          case 38:
+            keyDown.top = false;
+            break;
+          case 39:
+            keyDown.right = false;
+            break;
+          case 40:
+            keyDown.bottom = false;
+            break;
+        }
+      })
+    </script>
+  </body>
+</html>
